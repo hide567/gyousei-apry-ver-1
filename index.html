@@ -1938,6 +1938,66 @@
             const kb = (bytes / 1024).toFixed(2);
             document.getElementById('dataSize').textContent = `${kb} KB`;
         }
+        // 分析画面に追加する新機能
+function addAdvancedAnalytics() {
+    // 問題パターン分析
+    const patterns = analyzeQuestionPatterns();
+    
+    // AI予測
+    const prediction = generateAIPrediction();
+    
+    // 学習推奨
+    const recommendations = generateSmartRecommendations();
+    
+    // UIに反映
+    updateAnalyticsUI(patterns, prediction, recommendations);
+}
+
+// 問題パターン識別AI
+function analyzeQuestionPatterns() {
+    const history = JSON.parse(localStorage.getItem('studyHistory') || '[]');
+    const patterns = {
+        '条文問題': [],
+        '判例問題': [],
+        '事例問題': [],
+        '組み合わせ問題': []
+    };
+    
+    history.forEach(record => {
+        // キーワードでパターン判定
+        if (record.memo && record.memo.includes('条文')) {
+            patterns['条文問題'].push(record);
+        }
+        // ... 他のパターンも同様に
+    });
+    
+    return patterns;
+}
+
+// 合格可能性予測
+function generateAIPrediction() {
+    const history = JSON.parse(localStorage.getItem('studyHistory') || '[]');
+    
+    // 簡易予測アルゴリズム
+    let totalAccuracy = 0;
+    let studyDays = new Set();
+    let weakSubjects = [];
+    
+    history.forEach(record => {
+        const accuracy = parseInt(record.stats.percentage) || 0;
+        totalAccuracy += accuracy;
+        studyDays.add(new Date(record.date).toDateString());
+    });
+    
+    const avgAccuracy = totalAccuracy / history.length;
+    const passProbability = Math.min(95, avgAccuracy * 1.1); // 簡易計算
+    
+    return {
+        probability: Math.round(passProbability),
+        daysNeeded: Math.max(1, Math.round((80 - avgAccuracy) * 2)),
+        weakestSubject: weakSubjects[0] || '商法'
+    };
+}
     </script>
 </body>
 </html>
