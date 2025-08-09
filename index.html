@@ -790,8 +790,28 @@
                     <span>問題別入力（タップで切替）</span>
                 </div>
                 <div class="question-grid" id="questionGrid"></div>
+            </div>            
+            <div class="card">
+                <div class="card-title">
+                    <span>🎤</span>
+                    <span>音声コマンド</span>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="timer-btn start" id="voiceStartBtn" onclick="startVoiceCommand()" style="flex: 1;">
+                        音声開始
+                    </button>
+                    <button class="timer-btn stop" id="voiceStopBtn" onclick="stopVoiceCommand()" style="flex: 1; display: none;">
+                        音声停止
+                    </button>
+                </div>
+                <div id="voiceStatus" style="text-align: center; margin-top: 10px; font-size: 12px; color: #666;">
+                    音声コマンド: 停止中
+                </div>
+                <div style="font-size: 11px; color: #999; margin-top: 10px; text-align: center;">
+                    「タイマー開始」「民法」「保存」など話してください
+                </div>
             </div>
-            
+                   
             <button class="save-btn" onclick="saveRecord()">学習記録を保存</button>
         </div>
         
@@ -1938,159 +1958,445 @@
             const kb = (bytes / 1024).toFixed(2);
             document.getElementById('dataSize').textContent = `${kb} KB`;
         }
-        // 分析画面に追加する新機能
-function addAdvancedAnalytics() {
-    // 問題パターン分析
-    const patterns = analyzeQuestionPatterns();
-    
-    // AI予測
-    const prediction = generateAIPrediction();
-    
-    // 学習推奨
-    const recommendations = generateSmartRecommendations();
-    
-    // UIに反映
-    updateAnalyticsUI(patterns, prediction, recommendations);
-}
+        
+        // 音声コマンドシステム（統合版）
+        let voiceRecognition = null;
+        let isVoiceActive = false;
 
-// 問題パターン識別AI
-function analyzeQuestionPatterns() {
-    const history = JSON.parse(localStorage.getItem('studyHistory') || '[]');
-    const patterns = {
-        '条文問題': [],
-        '判例問題': [],
-        '事例問題': [],
-        '組み合わせ問題': []
-    };
-    
-    history.forEach(record => {
-        // キーワードでパターン判定
-        if (record.memo && record.memo.includes('条文')) {
-            patterns['条文問題'].push(record);
-        }
-        // ... 他のパターンも同様に
-    });
-    
-    return patterns;
-}
-
-// 合格可能性予測
-function generateAIPrediction() {
-    const history = JSON.parse(localStorage.getItem('studyHistory') || '[]');
-    
-    // 簡易予測アルゴリズム
-    let totalAccuracy = 0;
-    let studyDays = new Set();
-    let weakSubjects = [];
-    
-    history.forEach(record => {
-        const accuracy = parseInt(record.stats.percentage) || 0;
-        totalAccuracy += accuracy;
-        studyDays.add(new Date(record.date).toDateString());
-    });
-    
-    const avgAccuracy = totalAccuracy / history.length;
-    const passProbability = Math.min(95, avgAccuracy * 1.1); // 簡易計算
-    
-    return {
-        probability: Math.round(passProbability),
-        daysNeeded: Math.max(1, Math.round((80 - avgAccuracy) * 2)),
-        weakestSubject: weakSubjects[0] || '商法'
-    };
-}
-        // 音声コマンドシステム
-const voiceCommands = {
-    recognition: null,
-    
-    init() {
-        if ('webkitSpeechRecognition' in window) {
-            this.recognition = new webkitSpeechRecognition();
-            this.recognition.lang = 'ja-JP';
-            this.recognition.continuous = true;
+        // 音声コマンド初期化
+        function initVoiceCommands() {
+            // ブラウザ対応チェック
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                console.log('音声認識に対応していないブラウザです');
+                const btn = document.getElementById('voiceStartBtn');
+                if (btn) {
+                    btn.textContent = '非対応';
+                    btn.disabled = true;
+                }
+                return false;
+            }
             
-            this.recognition.onresult = (event) => {
-                const command = event.results[event.results.length - 1][0].transcript;
-                this.processCommand(command);
+            // 音声認識オブジェクト作成
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            voiceRecognition = new SpeechRecognition();
+            
+            // 設定
+            voiceRecognition.lang = 'ja-JP';
+            voiceRecognition.continuous = true;
+            voiceRecognition.interimResults = true;
+            
+            // 結果取得時の処理
+            voiceRecognition.onresult = function(event) {
+                let finalTranscript = '';
+                
+                // 最終結果のみを処理
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript;
+                    }
+                }
+                
+                if (finalTranscript) {
+                    console.log('音声認識結果:', finalTranscript);
+                    processVoiceCommand(finalTranscript);
+                }
+            };
+            
+            // エラー処理
+            voiceRecognition.onerror = function(event) {
+                console.error('音声認識エラー:', event.error);
+                updateVoiceStatus('エラー: ' + event.error, '#f44336');
+                
+                // 自動で停止
+                setTimeout(() => {
+                    stopVoiceCommand();
+                }, 2000);
+            };
+            
+            // 開始時
+            voiceRecognition.onstart = function() {
+                console.log('音声認識開始');
+                updateVoiceStatus('聞き取り中...', '#4caf50');
+            };
+            
+            // 終了時
+            voiceRecognition.onend = function() {
+                console.log('音声認識終了');
+                if (isVoiceActive) {
+                    updateVoiceStatus('再接続中...', '#ff9800');
+                    // 自動再開
+                    setTimeout(() => {
+                        if (isVoiceActive) {
+                            try {
+                                voiceRecognition.start();
+                            } catch(e) {
+                                console.error('再開エラー:', e);
+                                stopVoiceCommand();
+                            }
+                        }
+                    }, 1000);
+                } else {
+                    updateVoiceStatus('停止中', '#666');
+                }
+            };
+            
+            return true;
+        }
+
+        // 音声コマンド開始
+        function startVoiceCommand() {
+            if (!voiceRecognition) {
+                if (!initVoiceCommands()) {
+                    alert('お使いのブラウザは音声認識に対応していません');
+                    return;
+                }
+            }
+            
+            // マイクの許可をリクエスト
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(() => {
+                    isVoiceActive = true;
+                    voiceRecognition.start();
+                    
+                    // UIの更新
+                    document.getElementById('voiceStartBtn').style.display = 'none';
+                    document.getElementById('voiceStopBtn').style.display = 'inline-block';
+                    updateVoiceStatus('開始中...', '#ff9800');
+                    
+                    // 成功音声フィードバック
+                    speakText('音声コマンドを開始しました');
+                })
+                .catch((error) => {
+                    console.error('マイクアクセス拒否:', error);
+                    alert('マイクへのアクセスが必要です。ブラウザの設定を確認してください。');
+                });
+        }
+
+        // 音声コマンド停止
+        function stopVoiceCommand() {
+            isVoiceActive = false;
+            
+            if (voiceRecognition) {
+                voiceRecognition.stop();
+            }
+            
+            // UIの更新
+            document.getElementById('voiceStartBtn').style.display = 'inline-block';
+            document.getElementById('voiceStopBtn').style.display = 'none';
+            updateVoiceStatus('停止中', '#666');
+            
+            // 停止音声フィードバック
+            speakText('音声コマンドを停止しました');
+        }
+
+        // 音声コマンド処理
+        function processVoiceCommand(command) {
+            console.log('処理中のコマンド:', command);
+            const lowerCommand = command.toLowerCase();
+            
+            // コマンドマッピング
+            const commands = {
+                // タイマー操作
+                'タイマー開始': () => {
+                    startTimer();
+                    speakText('タイマーを開始しました');
+                },
+                'タイマー停止': () => {
+                    stopTimer();
+                    speakText('タイマーを停止しました');
+                },
+                'タイマーリセット': () => {
+                    resetTimer();
+                    speakText('タイマーをリセットしました');
+                },
+                'ポモドーロ': () => {
+                    startPomodoro();
+                    speakText('ポモドーロタイマーを開始しました');
+                },
+                
+                // 科目選択
+                '民法': () => {
+                    const btn = document.querySelector('[onclick*="minpou"]');
+                    if (btn) {
+                        selectSubject(btn, 'minpou');
+                        speakText('民法を選択しました');
+                    }
+                },
+                '行政法': () => {
+                    const btn = document.querySelector('[onclick*="gyousei"]');
+                    if (btn) {
+                        selectSubject(btn, 'gyousei');
+                        speakText('行政法を選択しました');
+                    }
+                },
+                '憲法': () => {
+                    const btn = document.querySelector('[onclick*="kenpou"]');
+                    if (btn) {
+                        selectSubject(btn, 'kenpou');
+                        speakText('憲法を選択しました');
+                    }
+                },
+                '商法': () => {
+                    const btn = document.querySelector('[onclick*="shouhou"]');
+                    if (btn) {
+                        selectSubject(btn, 'shouhou');
+                        speakText('商法を選択しました');
+                    }
+                },
+                
+                // 画面切り替え
+                '分析': () => {
+                    switchScreen('analysis');
+                    speakText('分析画面を表示しました');
+                },
+                '履歴': () => {
+                    switchTab('history');
+                    speakText('履歴を表示しました');
+                },
+                '進捗': () => {
+                    switchScreen('progress');
+                    speakText('進捗画面を表示しました');
+                },
+                
+                // データ操作
+                '保存': () => {
+                    saveRecord();
+                    speakText('学習記録を保存しました');
+                },
+                'リセット': () => {
+                    resetForm();
+                    speakText('フォームをリセットしました');
+                }
+            };
+            
+            // コマンド実行
+            let commandExecuted = false;
+            Object.keys(commands).forEach(key => {
+                if (lowerCommand.includes(key.toLowerCase()) || 
+                    command.includes(key)) {
+                    commands[key]();
+                    commandExecuted = true;
+                    updateVoiceStatus(`実行: ${key}`, '#4caf50');
+                    
+                    // 2秒後にステータスを戻す
+                    setTimeout(() => {
+                        if (isVoiceActive) {
+                            updateVoiceStatus('聞き取り中...', '#4caf50');
+                        }
+                    }, 2000);
+                }
+            });
+            
+            // 数値入力の処理
+            if (!commandExecuted) {
+                // "42問正解" のような入力
+                const correctMatch = command.match(/(\d+)問.*正解/);
+                if (correctMatch) {
+                    const count = parseInt(correctMatch[1]);
+                    setCorrectAnswers(count);
+                    speakText(`${count}問正解を入力しました`);
+                    commandExecuted = true;
+                }
+                
+                // "20問間違い" のような入力
+                const wrongMatch = command.match(/(\d+)問.*間違/);
+                if (wrongMatch) {
+                    const count = parseInt(wrongMatch[1]);
+                    setWrongAnswers(count);
+                    speakText(`${count}問不正解を入力しました`);
+                    commandExecuted = true;
+                }
+            }
+            
+            // 認識されなかった場合
+            if (!commandExecuted) {
+                updateVoiceStatus('コマンド不明', '#ff9800');
+                setTimeout(() => {
+                    if (isVoiceActive) {
+                        updateVoiceStatus('聞き取り中...', '#4caf50');
+                    }
+                }, 2000);
+            }
+        }
+
+        // 正解数を自動設定
+        function setCorrectAnswers(count) {
+            // 最初のN問を正解に設定
+            for (let i = 1; i <= Math.min(count, 50); i++) {
+                if (questionStates[i].state !== 'correct') {
+                    const cell = document.querySelector(`[data-number="${i}"]`);
+                    questionStates[i].state = 'correct';
+                    cell.classList.remove('wrong');
+                    cell.classList.add('correct');
+                }
+            }
+            updateStats();
+        }
+
+        // 不正解数を自動設定
+        function setWrongAnswers(count) {
+            let setCount = 0;
+            // 正解以外の問題を不正解に設定
+            for (let i = 1; i <= 50 && setCount < count; i++) {
+                if (questionStates[i].state !== 'correct') {
+                    const cell = document.querySelector(`[data-number="${i}"]`);
+                    questionStates[i].state = 'wrong';
+                    cell.classList.remove('correct');
+                    cell.classList.add('wrong');
+                    setCount++;
+                }
+            }
+            updateStats();
+        }
+
+        // 音声出力
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                // 前の音声を停止
+                speechSynthesis.cancel();
+                
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'ja-JP';
+                utterance.rate = 1.2; // 少し早めに
+                utterance.volume = 0.7; // 少し小さめに
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        // 音声ステータス更新
+        function updateVoiceStatus(message, color = '#666') {
+            const statusElement = document.getElementById('voiceStatus');
+            if (statusElement) {
+                statusElement.textContent = '音声コマンド: ' + message;
+                statusElement.style.color = color;
+            }
+        }
+
+        // 25分タイマー自動セット機能（ポモドーロテクニック）
+        function startPomodoro() {
+            const POMODORO_TIME = 25 * 60; // 25分
+            
+            // タイマーをリセットして開始
+            resetTimer();
+            startTimer();
+            
+            // 25分後に通知
+            setTimeout(() => {
+                stopTimer();
+                if ('Notification' in window) {
+                    new Notification('休憩時間です！', {
+                        body: '5分間休憩しましょう',
+                        icon: 'icon-192.png'
+                    });
+                }
+                playSound(); // 音で通知
+                speakText('25分経過しました。5分間休憩しましょう');
+            }, POMODORO_TIME * 1000);
+        }
+
+        // 通知音
+        function playSound() {
+            // シンプルなビープ音を生成
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 800; // 周波数
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.5);
+        }
+
+        // 問題パターン分析（簡易版）
+        function analyzeQuestionPatterns() {
+            const history = JSON.parse(localStorage.getItem('studyHistory') || '[]');
+            const patterns = {
+                '高正答率': [],
+                '低正答率': [],
+                '最近の学習': []
+            };
+            
+            history.forEach(record => {
+                const accuracy = parseInt(record.stats.percentage) || 0;
+                if (accuracy >= 80) {
+                    patterns['高正答率'].push(record);
+                } else if (accuracy < 60) {
+                    patterns['低正答率'].push(record);
+                }
+                
+                const recordDate = new Date(record.date);
+                const today = new Date();
+                const diffDays = (today - recordDate) / (1000 * 60 * 60 * 24);
+                if (diffDays <= 7) {
+                    patterns['最近の学習'].push(record);
+                }
+            });
+            
+            return patterns;
+        }
+
+        // 合格可能性予測（簡易版）
+        function generateAIPrediction() {
+            const history = JSON.parse(localStorage.getItem('studyHistory') || '[]');
+            
+            if (history.length === 0) {
+                return {
+                    probability: 0,
+                    daysNeeded: 180,
+                    weakestSubject: '未測定'
+                };
+            }
+            
+            let totalAccuracy = 0;
+            let studyDays = new Set();
+            let subjectAccuracy = {};
+            
+            history.forEach(record => {
+                const accuracy = parseInt(record.stats.percentage) || 0;
+                totalAccuracy += accuracy;
+                studyDays.add(new Date(record.date).toDateString());
+                
+                if (record.subject) {
+                    if (!subjectAccuracy[record.subject]) {
+                        subjectAccuracy[record.subject] = [];
+                    }
+                    subjectAccuracy[record.subject].push(accuracy);
+                }
+            });
+            
+            const avgAccuracy = totalAccuracy / history.length;
+            const passProbability = Math.min(95, Math.max(0, avgAccuracy * 1.1));
+            
+            // 最も苦手な科目を特定
+            let weakestSubject = '未測定';
+            let lowestAvg = 100;
+            Object.keys(subjectAccuracy).forEach(subject => {
+                const subjectAvg = subjectAccuracy[subject].reduce((a, b) => a + b, 0) / subjectAccuracy[subject].length;
+                if (subjectAvg < lowestAvg) {
+                    lowestAvg = subjectAvg;
+                    const subjectNames = {
+                        minpou: '民法',
+                        gyousei: '行政法',
+                        kenpou: '憲法',
+                        shouhou: '商法',
+                        kiso: '基礎法学',
+                        ippan: '一般知識'
+                    };
+                    weakestSubject = subjectNames[subject] || subject;
+                }
+            });
+            
+            return {
+                probability: Math.round(passProbability),
+                daysNeeded: Math.max(1, Math.round((80 - avgAccuracy) * 2)),
+                weakestSubject: weakestSubject
             };
         }
-    },
-    
-    processCommand(command) {
-        // コマンド例
-        const commands = {
-            'タイマー開始': () => startTimer(),
-            'タイマー停止': () => stopTimer(),
-            '民法': () => selectSubject(null, 'minpou'),
-            '行政法': () => selectSubject(null, 'gyousei'),
-            '保存': () => saveRecord(),
-            '分析': () => switchScreen('analysis'),
-            '履歴': () => switchTab('history')
-        };
-        
-        // マッチするコマンドを実行
-        Object.keys(commands).forEach(key => {
-            if (command.includes(key)) {
-                commands[key]();
-                this.speak(`${key}を実行しました`);
-            }
-        });
-        
-        // 数値入力（例: "42問正解"）
-        const match = command.match(/(\d+)問.*正解/);
-        if (match) {
-            document.getElementById('correctCount').value = match[1];
-            updateStats();
-            this.speak(`${match[1]}問正解を入力しました`);
-        }
-    },
-    
-    speak(text) {
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'ja-JP';
-        speechSynthesis.speak(utterance);
-    },
-    
-    start() {
-        this.recognition.start();
-        this.speak('音声コマンドを開始しました');
-    },
-    
-    stop() {
-        this.recognition.stop();
-        this.speak('音声コマンドを終了しました');
-    }
-};
-
-// 使い方
-// voiceCommands.init();
-// voiceCommands.start();
-        // 25分タイマー自動セット機能
-function startPomodoro() {
-  const POMODORO_TIME = 25 * 60; // 25分
-  const BREAK_TIME = 5 * 60;     // 5分
-  
-  // タイマーを25分にセット
-  seconds = 0;
-  startTimer();
-  
-  // 25分後に通知
-  setTimeout(() => {
-    stopTimer();
-    if ('Notification' in window) {
-      new Notification('休憩時間です！', {
-        body: '5分間休憩しましょう',
-        icon: 'icon-192.png'
-      });
-    }
-    playSound(); // 音で通知
-  }, POMODORO_TIME * 1000);
-}
-
-// 通知音
-function playSound() {
-  const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBCZth8Tl85');
-  audio.play();
-}
     </script>
 </body>
 </html>
