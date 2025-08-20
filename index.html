@@ -2,2640 +2,820 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>学習トラッカー - 行政書士試験対策</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#つながる# - Quick Call</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
         }
-        
-        :root {
-            --primary: #2c3e50;
-            --primary-light: #34495e;
-            --secondary: #3498db;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --dark: #1f2937;
-            --gray: #6b7280;
-            --light: #f3f4f6;
-            --lighter: #f9fafb;
-            --white: #ffffff;
-            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-        }
-        
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', 'Noto Sans CJK JP', sans-serif;
-            background: var(--lighter);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            position: relative;
+            align-items: center;
+            padding: 20px;
+            color: #333;
         }
-        
-        /* ヘッダー */
+
         .app-header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            padding: 20px;
             text-align: center;
             color: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .app-logo {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 5px;
-        }
-        
-        .app-logo-icon {
-            font-size: 24px;
-        }
-        
-        .app-title {
-            font-size: 22px;
-            font-weight: 700;
-        }
-        
-        .app-subtitle {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-        
-        /* メインタブ（3つ） */
-        .main-tabs {
-            display: flex;
-            background: white;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        
-        .main-tab {
-            flex: 1;
-            padding: 15px;
-            text-align: center;
-            border: none;
-            background: white;
-            color: var(--gray);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
-        }
-        
-        .main-tab.active {
-            color: var(--primary);
-        }
-        
-        .main-tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: var(--primary);
-        }
-        
-        /* コンテンツエリア */
-        .content-area {
-            flex: 1;
-            padding-bottom: 80px;
-            overflow-y: auto;
-        }
-        
-        /* カード */
-        .card {
-            background: white;
-            border-radius: 15px;
-            padding: 15px;
-            margin: 10px;
-            box-shadow: var(--shadow);
-        }
-        
-        .card-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--light);
-        }
-        
-        .card-icon {
-            font-size: 20px;
-        }
-        
-        .card-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--dark);
-        }
-        
-        /* 問題集カード選択（開閉式） */
-        .book-card {
-            background: white;
-            border: 2px solid var(--light);
-            border-radius: 12px;
-            padding: 15px;
-            margin: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .book-card:hover {
-            border-color: var(--secondary);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .book-card.selected {
-            border-color: var(--primary);
-            background: linear-gradient(135deg, rgba(44, 62, 80, 0.05), rgba(52, 152, 219, 0.05));
-        }
-        
-        .book-card-title {
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-        
-        .book-card-meta {
-            font-size: 12px;
-            color: var(--gray);
-        }
-        
-        /* 階層リスト表示（統一デザイン） */
-        .hierarchy-list {
-            padding: 10px;
-        }
-        
-        .hierarchy-item {
-            border: 1px solid var(--light);
-            border-radius: 8px;
-            margin-bottom: 8px;
-            overflow: hidden;
-        }
-        
-        .hierarchy-row {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            background: white;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .hierarchy-row:hover {
-            background: var(--lighter);
-        }
-        
-        .hierarchy-toggle {
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 8px;
-            font-size: 12px;
-            transition: transform 0.3s;
-        }
-        
-        .hierarchy-toggle.expanded {
-            transform: rotate(90deg);
-        }
-        
-        .hierarchy-icon {
-            margin-right: 8px;
-            font-size: 16px;
-        }
-        
-        .hierarchy-label {
-            flex: 1;
-            font-weight: 500;
-        }
-        
-        .hierarchy-meta {
-            margin-left: auto;
-            margin-right: 10px;
-            font-size: 12px;
-            color: var(--gray);
-        }
-        
-        .hierarchy-actions {
-            display: flex;
-            gap: 5px;
-        }
-        
-        .hierarchy-action {
-            padding: 4px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 14px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-            width: 28px;
-            height: 28px;
-        }
-        
-        .hierarchy-action:hover {
-            background: var(--primary-light);
-        }
-        
-        .hierarchy-action.delete {
-            background: transparent;
-            color: var(--danger);
-        }
-        
-        .hierarchy-action.delete:hover {
-            background: rgba(239, 68, 68, 0.1);
-        }
-        
-        .hierarchy-children {
-            display: none;
-            background: var(--lighter);
-            padding: 8px;
-        }
-        
-        .hierarchy-children.expanded {
-            display: block;
-        }
-        
-        /* パンくずリスト */
-        .breadcrumb {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            padding: 10px;
-            background: var(--light);
-            border-radius: 10px;
-            margin: 10px;
-            flex-wrap: wrap;
-            font-size: 13px;
-        }
-        
-        .breadcrumb-item {
-            color: var(--gray);
-            cursor: pointer;
-            white-space: nowrap;
-        }
-        
-        .breadcrumb-item:hover {
-            color: var(--primary);
-        }
-        
-        .breadcrumb-item.active {
-            color: var(--primary);
-            font-weight: 600;
-        }
-        
-        .breadcrumb-separator {
-            color: var(--gray);
-        }
-        
-        /* ヒートマップ */
-        .heatmap-container {
-            background: white;
-            border-radius: 10px;
-            padding: 15px;
-        }
-        
-        .heatmap-controls {
-            margin-bottom: 15px;
-        }
-        
-        .heatmap-select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid var(--light);
-            border-radius: 8px;
-            background: white;
-            font-size: 14px;
-            cursor: pointer;
-        }
-        
-        .heatmap-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(25px, 1fr));
-            gap: 1px;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-        
-        .heatmap-label {
-            grid-column: 1 / -1;
-            font-size: 9px;
-            color: var(--gray);
-            padding: 2px 0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .heatmap-cell {
-            aspect-ratio: 1;
-            background: var(--light);
-            border-radius: 2px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            position: relative;
-        }
-        
-        .heatmap-cell.correct {
-            background: var(--success);
-            color: white;
-        }
-        
-        .heatmap-cell.wrong {
-            background: var(--danger);
-            color: white;
-        }
-        
-        .heatmap-cell.bookmarked::after {
-            content: '★';
-            position: absolute;
-            top: -2px;
-            right: -2px;
-            font-size: 8px;
-            color: var(--warning);
-        }
-        
-        /* レーダーチャート */
-        .radar-chart-container {
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .radar-chart {
-            width: 300px;
-            height: 300px;
-            position: relative;
-        }
-        
-        /* 学習グラフ（縦棒） */
-        .chart-container {
-            background: white;
-            border-radius: 10px;
-            padding: 15px;
-        }
-        
-        .chart-controls {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        
-        .chart-btn {
-            padding: 8px 15px;
-            border: 1px solid var(--light);
-            border-radius: 8px;
-            background: white;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-        
-        .chart-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-        
-        .chart-wrapper {
-            height: 200px;
-            position: relative;
-            padding: 10px 0;
-        }
-        
-        .chart-bars {
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-around;
-            height: 100%;
-        }
-        
-        .chart-bar-wrapper {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100%;
-            position: relative;
-        }
-        
-        .chart-bar-value {
-            font-size: 10px;
-            font-weight: 600;
-            margin-bottom: 3px;
-        }
-        
-        .chart-bar-container {
-            flex: 1;
-            width: 100%;
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-        }
-        
-        .chart-bar {
-            width: 60%;
-            max-width: 30px;
-            background: linear-gradient(to top, var(--primary), var(--secondary));
-            border-radius: 3px 3px 0 0;
-            transition: all 0.3s;
-        }
-        
-        .chart-bar.today {
-            background: linear-gradient(to top, var(--warning), var(--secondary));
-        }
-        
-        .chart-bar-label {
-            font-size: 11px;
-            color: var(--gray);
-            margin-top: 5px;
-        }
-        
-        /* 実績バッジ（4列） */
-        .achievement-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin: 15px 0;
-        }
-        
-        .achievement-card {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 10px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: var(--shadow);
-            transition: all 0.3s;
-        }
-        
-        .achievement-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .achievement-icon {
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
-        
-        .achievement-icon.disabled {
-            filter: grayscale(100%);
-            opacity: 0.5;
-        }
-        
-        .achievement-label {
-            font-size: 10px;
-            color: var(--gray);
-            text-align: center;
-            margin-bottom: 2px;
-        }
-        
-        .achievement-value {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--dark);
-        }
-        
-        /* 統計グリッド */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin: 15px 0;
-        }
-        
-        .stat-card {
-            padding: 15px;
-            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
-            border-radius: 10px;
-            text-align: center;
-        }
-        
-        .stat-value {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--dark);
-            margin-bottom: 3px;
-        }
-        
-        .stat-label {
-            font-size: 12px;
-            color: var(--gray);
-        }
-        
-        /* 進捗バー */
-        .progress-bar-container {
-            height: 12px;
-            background: var(--light);
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 10px 0;
-        }
-        
-        .progress-bar-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--success), #34d399);
-            border-radius: 10px;
-            transition: width 0.5s ease;
-        }
-        
-        /* アクションボタン */
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-            margin: 15px 0;
-        }
-        
-        .action-btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 10px;
-            font-weight: 700;
-            color: white;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            font-size: 13px;
-            transition: all 0.3s;
-        }
-        
-        .action-btn.correct {
-            background: var(--success);
-        }
-        
-        .action-btn.wrong {
-            background: var(--danger);
-        }
-        
-        .action-btn.bookmark {
-            background: var(--warning);
-        }
-        
-        .action-btn.bookmark.active {
-            background: linear-gradient(135deg, var(--warning), var(--secondary));
-            box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
-        }
-        
-        /* 問題グリッド */
-        .question-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(35px, 1fr));
-            gap: 5px;
-            padding: 10px;
-            background: var(--light);
-            border-radius: 10px;
-            max-height: 250px;
-            overflow-y: auto;
-        }
-        
-        .question-cell {
-            aspect-ratio: 1;
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-            position: relative;
-        }
-        
-        .question-cell.correct {
-            background: var(--success);
-            color: white;
-            border-color: var(--success);
-        }
-        
-        .question-cell.wrong {
-            background: var(--danger);
-            color: white;
-            border-color: var(--danger);
-        }
-        
-        .question-cell.bookmarked::after {
-            content: '★';
-            position: absolute;
-            top: -3px;
-            right: -3px;
-            font-size: 10px;
-            color: var(--warning);
-        }
-        
-        /* アコーディオン */
-        .accordion {
+            margin-bottom: 30px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .app-header h1 {
+            font-size: 2.5em;
             margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
         }
-        
-        .accordion-header {
-            background: white;
-            border: 1px solid var(--light);
-            border-radius: 10px;
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.3s;
+
+        .app-header p {
+            opacity: 0.9;
+            font-size: 1.1em;
         }
-        
-        .accordion-header:hover {
-            background: var(--light);
-        }
-        
-        .accordion-header.active {
-            border-radius: 10px 10px 0 0;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-        }
-        
-        .accordion-content {
-            display: none;
-            background: white;
-            border: 1px solid var(--light);
-            border-top: none;
-            border-radius: 0 0 10px 10px;
-            padding: 15px;
-        }
-        
-        .accordion-content.active {
-            display: block;
-        }
-        
-        .accordion-arrow {
-            transition: transform 0.3s;
-        }
-        
-        .accordion-header.active .accordion-arrow {
-            transform: rotate(180deg);
-        }
-        
-        /* フォーム */
-        .form-group {
-            margin-bottom: 15px;
-        }
-        
-        .form-label {
-            display: block;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--dark);
-            margin-bottom: 5px;
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid var(--light);
-            border-radius: 8px;
-            font-size: 14px;
-        }
-        
-        /* 削除リスト */
-        .delete-list-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            border-bottom: 1px solid var(--light);
-        }
-        
-        .delete-list-item:hover {
-            background: var(--lighter);
-        }
-        
-        .delete-btn {
-            padding: 5px 10px;
-            background: var(--danger);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .delete-btn:hover {
-            background: #dc2626;
-        }
-        
-        /* 保存ボタン */
-        .save-button {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .save-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(44, 62, 80, 0.3);
-        }
-        
-        /* フッタータブ */
-        .footer-tabs {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-            display: flex;
-            padding: 5px 0;
-            z-index: 100;
-        }
-        
-        .footer-tab {
-            flex: 1;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 3px;
-            border: none;
-            background: none;
-            color: var(--gray);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .footer-tab.active {
-            color: var(--primary);
-        }
-        
-        .footer-tab-icon {
-            font-size: 20px;
-        }
-        
-        .footer-tab-label {
-            font-size: 11px;
-        }
-        
-        /* タブコンテンツ */
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        /* モーダル */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 2000;
-        }
-        
-        .modal.active {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        
-        .modal-content {
+
+        .main-container {
             background: white;
             border-radius: 20px;
-            padding: 25px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             max-width: 500px;
             width: 100%;
-            max-height: 80vh;
-            overflow-y: auto;
+            animation: slideUp 0.5s ease;
         }
-        
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
+
+        .user-id-section {
+            background: #f7f7f7;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            text-align: center;
         }
-        
-        .modal-close {
-            width: 30px;
-            height: 30px;
+
+        .user-id {
+            font-family: monospace;
+            font-size: 1.2em;
+            color: #667eea;
+            margin: 10px 0;
+            word-break: break-all;
+        }
+
+        .copy-btn {
+            background: #667eea;
+            color: white;
             border: none;
-            background: var(--light);
-            border-radius: 50%;
+            padding: 8px 20px;
+            border-radius: 20px;
             cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .add-contact-section {
+            margin-bottom: 25px;
+        }
+
+        .add-contact-section h3 {
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .add-btn {
+            background: #764ba2;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(118, 75, 162, 0.4);
+        }
+
+        .favorites-section h3 {
+            margin-bottom: 20px;
+            color: #555;
+        }
+
+        .favorites-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .favorite-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .favorite-card::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .favorite-card:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .favorite-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .favorite-card .icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .favorite-card .name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .favorite-card .status {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .call-panel {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: 1000;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        .call-panel.active {
+            display: flex;
+        }
+
+        .calling-info {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .calling-info h2 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .call-status {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .call-timer {
+            font-size: 1.5em;
+            margin-top: 20px;
+            font-family: monospace;
+        }
+
+        .call-controls {
+            display: flex;
+            gap: 20px;
+        }
+
+        .control-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 1.5em;
         }
-        
-        /* 入力ダイアログ */
-        .input-dialog {
+
+        .control-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .mute-btn {
+            background: #4a5568;
+            color: white;
+        }
+
+        .mute-btn.active {
+            background: #e53e3e;
+        }
+
+        .speaker-btn {
+            background: #4a5568;
+            color: white;
+        }
+
+        .speaker-btn.active {
+            background: #48bb78;
+        }
+
+        .record-btn {
+            background: #4a5568;
+            color: white;
+        }
+
+        .record-btn.active {
+            background: #ed8936;
+            animation: pulse 1.5s infinite;
+        }
+
+        .end-call-btn {
+            background: #e53e3e;
+            color: white;
+        }
+
+        .incoming-call {
+            display: none;
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: var(--shadow-lg);
-            z-index: 3000;
-            width: 90%;
-            max-width: 400px;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            z-index: 2000;
+            text-align: center;
+            animation: shake 0.5s;
         }
-        
-        .input-dialog h3 {
-            margin-bottom: 15px;
-            color: var(--dark);
+
+        .incoming-call.active {
+            display: block;
         }
-        
-        .dialog-buttons {
+
+        .incoming-call h3 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .incoming-call-actions {
             display: flex;
-            gap: 10px;
-            margin-top: 15px;
+            gap: 20px;
+            justify-content: center;
         }
-        
-        .dialog-btn {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .dialog-btn.primary {
-            background: var(--primary);
+
+        .accept-btn {
+            background: #48bb78;
             color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1em;
         }
-        
-        .dialog-btn.secondary {
-            background: var(--light);
-            color: var(--dark);
+
+        .reject-btn {
+            background: #e53e3e;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1em;
         }
-        
-        .dialog-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 2999;
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
-        
-        /* レスポンシブ */
-        @media (max-width: 768px) {
-            .achievement-grid {
-                grid-template-columns: repeat(4, 1fr);
+
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(30px);
             }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+            25% { transform: translate(-50%, -50%) rotate(-5deg); }
+            75% { transform: translate(-50%, -50%) rotate(5deg); }
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #48bb78;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            transform: translateX(400px);
+            transition: transform 0.3s;
+            z-index: 3000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
         }
     </style>
 </head>
 <body>
-    <!-- ヘッダー -->
-    <header class="app-header">
-        <div class="app-logo">
-            <span class="app-logo-icon">📚</span>
-            <span class="app-title">学習トラッカー</span>
-        </div>
-        <div class="app-subtitle">行政書士試験対策 v2.0</div>
-    </header>
-    
-    <!-- メインタブ（3つ） -->
-    <div class="main-tabs">
-        <button class="main-tab active" onclick="switchMainTab('record', event)">記録入力</button>
-        <button class="main-tab" onclick="switchMainTab('analysis', event)">分析</button>
-        <button class="main-tab" onclick="switchMainTab('progress', event)">進捗</button>
+    <div class="app-header">
+        <h1>#つながる#</h1>
+        <p>大切な人とすぐつながる</p>
     </div>
-    
-    <!-- コンテンツエリア -->
-    <div class="content-area">
-        <!-- 記録入力タブ -->
-        <div id="record-tab" class="tab-content active">
-            <!-- 問題集選択（開閉式カード） -->
-            <div id="bookCardsContainer"></div>
-            
-            <!-- パンくずリスト -->
-            <div class="breadcrumb" id="breadcrumb" style="display: none;"></div>
-            
-            <!-- 階層リスト（記録用） -->
-            <div id="recordHierarchyContainer" style="display: none;"></div>
-            
-            <!-- 問題入力 -->
-            <div class="card" id="questionSection" style="display: none;">
-                <div class="card-header">
-                    <span class="card-icon">✍️</span>
-                    <span class="card-title">問題別正誤入力</span>
-                </div>
-                
-                <div class="action-buttons">
-                    <button class="action-btn correct" onclick="markCorrect()">
-                        <span>⭕</span>
-                        <span>正解</span>
-                    </button>
-                    <button class="action-btn wrong" onclick="markWrong()">
-                        <span>❌</span>
-                        <span>不正解</span>
-                    </button>
-                    <button class="action-btn bookmark" id="bookmarkBtn" onclick="toggleBookmarkMode()">
-                        <span>⭐</span>
-                        <span>マーク</span>
-                    </button>
-                </div>
-                
-                <div class="question-grid" id="questionGrid"></div>
-                
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-value" id="totalCount">0</div>
-                        <div class="stat-label">解答数</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="correctCount">0</div>
-                        <div class="stat-label">正解数</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="wrongCount">0</div>
-                        <div class="stat-label">不正解数</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="correctRate">0%</div>
-                        <div class="stat-label">正答率</div>
-                    </div>
-                </div>
-                
-                <button class="save-button" onclick="saveRecord()">学習記録を保存</button>
-            </div>
+
+    <div class="main-container">
+        <div class="user-id-section">
+            <strong>あなたのID:</strong>
+            <div class="user-id" id="userId">生成中...</div>
+            <button class="copy-btn" onclick="copyUserId()">📋 コピー</button>
         </div>
-        
-        <!-- 分析タブ -->
-        <div id="analysis-tab" class="tab-content">
-            <!-- 学習グラフ -->
-            <div class="accordion">
-                <div class="accordion-header" onclick="toggleAccordion(this)">
-                    <span>📊 学習グラフ</span>
-                    <span class="accordion-arrow">▼</span>
-                </div>
-                <div class="accordion-content">
-                    <div class="chart-controls">
-                        <button class="chart-btn active" onclick="switchChartView('day', this)">日別</button>
-                        <button class="chart-btn" onclick="switchChartView('week', this)">週間</button>
-                        <button class="chart-btn" onclick="switchChartView('month', this)">月間</button>
-                    </div>
-                    <div class="chart-wrapper">
-                        <div class="chart-bars" id="chartBars"></div>
-                    </div>
-                </div>
+
+        <div class="add-contact-section">
+            <h3>連絡先を追加</h3>
+            <div class="input-group">
+                <input type="text" id="contactName" placeholder="名前">
+                <input type="text" id="contactId" placeholder="相手のID">
             </div>
-            
-            <!-- ヒートマップ -->
-            <div class="accordion">
-                <div class="accordion-header" onclick="toggleAccordion(this)">
-                    <span>🗺️ 問題ヒートマップ</span>
-                    <span class="accordion-arrow">▼</span>
-                </div>
-                <div class="accordion-content">
-                    <div class="heatmap-controls">
-                        <select class="heatmap-select" id="heatmapBookSelect" onchange="updateHeatmap()">
-                            <option value="">問題集を選択</option>
-                        </select>
-                    </div>
-                    <div class="heatmap-grid" id="heatmapGrid"></div>
-                </div>
-            </div>
-            
-            <!-- 弱点分析 -->
-            <div class="accordion">
-                <div class="accordion-header" onclick="toggleAccordion(this)">
-                    <span>🎯 弱点分析</span>
-                    <span class="accordion-arrow">▼</span>
-                </div>
-                <div class="accordion-content">
-                    <div id="weaknessAnalysis"></div>
-                </div>
-            </div>
+            <button class="add-btn" onclick="addContact()">追加</button>
         </div>
-        
-        <!-- 進捗タブ -->
-        <div id="progress-tab" class="tab-content">
-            <div class="card">
-                <div class="card-header">
-                    <span class="card-icon">📊</span>
-                    <span class="card-title">全体進捗状況</span>
-                </div>
-                <div id="overallProgress"></div>
-            </div>
-            
-            <div class="card">
-                <div class="card-header">
-                    <span class="card-icon">📈</span>
-                    <span class="card-title">科目別進捗</span>
-                </div>
-                <div class="radar-chart-container">
-                    <canvas id="radarChart" width="300" height="300"></canvas>
-                </div>
+
+        <div class="favorites-section">
+            <h3>お気に入り</h3>
+            <div class="favorites-grid" id="favoritesGrid">
+                <!-- 動的に追加される -->
             </div>
         </div>
     </div>
-    
-    <!-- フッタータブ -->
-    <div class="footer-tabs">
-        <button class="footer-tab active" onclick="switchFooterTab('register', event)">
-            <span class="footer-tab-icon">📝</span>
-            <span class="footer-tab-label">登録</span>
-        </button>
-        <button class="footer-tab" onclick="switchFooterTab('history', event)">
-            <span class="footer-tab-icon">📅</span>
-            <span class="footer-tab-label">履歴</span>
-        </button>
-        <button class="footer-tab" onclick="switchFooterTab('results', event)">
-            <span class="footer-tab-icon">🏆</span>
-            <span class="footer-tab-label">実績</span>
-        </button>
-        <button class="footer-tab" onclick="switchFooterTab('settings', event)">
-            <span class="footer-tab-icon">⚙️</span>
-            <span class="footer-tab-label">設定</span>
-        </button>
-    </div>
-    
-    <!-- フッタータブコンテンツ（モーダル表示） -->
-    <div id="footerModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modalTitle">タイトル</h3>
-                <button class="modal-close" onclick="closeFooterModal()">×</button>
-            </div>
-            <div id="modalBody"></div>
+
+    <!-- 通話パネル -->
+    <div class="call-panel" id="callPanel">
+        <div class="calling-info">
+            <h2 id="callingName">通話中...</h2>
+            <div class="call-status" id="callStatus">接続中...</div>
+            <div class="call-timer" id="callTimer">00:00</div>
+        </div>
+        <div class="call-controls">
+            <button class="control-btn mute-btn" id="muteBtn" onclick="toggleMute()">
+                🎤
+            </button>
+            <button class="control-btn speaker-btn" id="speakerBtn" onclick="toggleSpeaker()">
+                🔊
+            </button>
+            <button class="control-btn record-btn" id="recordBtn" onclick="toggleRecord()">
+                ⏺️
+            </button>
+            <button class="control-btn end-call-btn" onclick="endCall()">
+                📞
+            </button>
         </div>
     </div>
-    
-    <!-- 入力ダイアログ -->
-    <div id="dialogOverlay" class="dialog-overlay" style="display: none;"></div>
-    <div id="inputDialog" class="input-dialog" style="display: none;">
-        <h3 id="dialogTitle">タイトル</h3>
-        <div id="dialogBody"></div>
-        <div class="dialog-buttons">
-            <button class="dialog-btn secondary" onclick="closeDialog()">キャンセル</button>
-            <button class="dialog-btn primary" id="dialogConfirmBtn">確定</button>
+
+    <!-- 着信画面 -->
+    <div class="incoming-call" id="incomingCall">
+        <h3 id="callerName">着信中...</h3>
+        <div class="incoming-call-actions">
+            <button class="accept-btn" onclick="acceptCall()">応答</button>
+            <button class="reject-btn" onclick="rejectCall()">拒否</button>
         </div>
     </div>
-    
+
+    <!-- 通知 -->
+    <div class="notification" id="notification"></div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
     <script>
-        // データ構造
-        let books = {};
-        let currentBook = null;
-        let currentPath = [];
-        let questionStates = {};
-        let allRecords = [];
-        let bookmarkMode = false;
-        let currentChartView = 'day';
-        let expandedNodes = new Set();
-        let savedQuestionStates = {};
-        let selectedBookCard = null;
+        // Firebase設定（実際の値に置き換えてください）
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            databaseURL: "YOUR_DATABASE_URL",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // 開発用のモックモード（Firebaseが設定されていない場合）
+        let mockMode = firebaseConfig.apiKey === "YOUR_API_KEY";
+        let database = null;
         
+        if (!mockMode) {
+            firebase.initializeApp(firebaseConfig);
+            database = firebase.database();
+        }
+
+        // グローバル変数
+        let userId = null;
+        let localStream = null;
+        let remoteStream = null;
+        let peerConnection = null;
+        let mediaRecorder = null;
+        let recordedChunks = [];
+        let callTimer = null;
+        let callStartTime = null;
+        let currentCall = null;
+        let contacts = [];
+
+        // ユーザーID生成
+        function generateUserId() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let id = '';
+            for (let i = 0; i < 8; i++) {
+                id += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return id;
+        }
+
         // 初期化
-        document.addEventListener('DOMContentLoaded', function() {
-            loadBooksFromStorage();
-            initializeSampleData();
-            renderBookCards();
-            loadAllRecords();
-            loadSavedQuestionStates();
-            updateChartBars();
-            updateHeatmapBookSelect();
-        });
-        
-        // サンプルデータ
-        function initializeSampleData() {
-            if (Object.keys(books).length === 0) {
-                const sampleBook = {
-                    id: 'sample-2024',
-                    name: '合格革命 肢別過去問集 2024年版',
-                    examType: 'gyousei',
-                    structure: {
-                        '総則': {
-                            type: 'subject',
-                            children: {
-                                '権利の主体・客体': {
-                                    type: 'chapter',
-                                    children: {
-                                        '権利能力': {
-                                            type: 'section',
-                                            questions: [1, 2, 3, 4, 5]
-                                        },
-                                        '意思能力': {
-                                            type: 'section',
-                                            questions: [1, 2, 3, 4, 5]
-                                        },
-                                        '行為能力': {
-                                            type: 'section',
-                                            questions: [1, 2, 3, 4, 5, 6, 7, 8]
-                                        }
-                                    }
-                                },
-                                '意思表示': {
-                                    type: 'chapter',
-                                    children: {
-                                        '法律行為': {
-                                            type: 'section',
-                                            questions: [1, 2, 3]
-                                        },
-                                        '意思表示': {
-                                            type: 'section',
-                                            questions: [1, 2, 3, 4, 5]
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        '行政法': {
-                            type: 'subject',
-                            children: {
-                                '行政主体': {
-                                    type: 'chapter',
-                                    children: {
-                                        'たん': {
-                                            type: 'section',
-                                            questions: [1, 2, 3, 4, 5]
-                                        }
-                                    }
-                                },
-                                '憲法': {
-                                    type: 'chapter',
-                                    children: {
-                                        '総論': {
-                                            type: 'section',
-                                            children: {
-                                                '特色': {
-                                                    type: 'subsection',
-                                                    questions: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    createdAt: new Date().toISOString()
-                };
-                
-                books[sampleBook.id] = sampleBook;
-                saveBooksToStorage();
+        function init() {
+            userId = localStorage.getItem('userId');
+            if (!userId) {
+                userId = generateUserId();
+                localStorage.setItem('userId', userId);
+            }
+            document.getElementById('userId').textContent = userId;
+
+            // 保存された連絡先を読み込み
+            const savedContacts = localStorage.getItem('contacts');
+            if (savedContacts) {
+                contacts = JSON.parse(savedContacts);
+                renderContacts();
+            }
+
+            // Firebase リスナー設定（モックモードでない場合）
+            if (!mockMode && database) {
+                listenForCalls();
+            }
+
+            // 通知許可をリクエスト
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission();
             }
         }
-        
-        // LocalStorage操作
-        function loadBooksFromStorage() {
-            const stored = localStorage.getItem('studyTrackerBooks');
-            if (stored) {
-                books = JSON.parse(stored);
-            }
-        }
-        
-        function saveBooksToStorage() {
-            localStorage.setItem('studyTrackerBooks', JSON.stringify(books));
-        }
-        
-        function loadAllRecords() {
-            const history = localStorage.getItem('studyHistory');
-            if (history) {
-                allRecords = JSON.parse(history);
-            }
-        }
-        
-        function loadSavedQuestionStates() {
-            const saved = localStorage.getItem('savedQuestionStates');
-            if (saved) {
-                savedQuestionStates = JSON.parse(saved);
-            }
-        }
-        
-        function saveQuestionStatesForPath() {
-            if (currentBook && currentPath.length > 0) {
-                const key = `${currentBook.id}_${currentPath.join('/')}`;
-                savedQuestionStates[key] = questionStates;
-                localStorage.setItem('savedQuestionStates', JSON.stringify(savedQuestionStates));
-            }
-        }
-        
-        function loadQuestionStatesForPath() {
-            if (currentBook && currentPath.length > 0) {
-                const key = `${currentBook.id}_${currentPath.join('/')}`;
-                if (savedQuestionStates[key]) {
-                    questionStates = savedQuestionStates[key];
-                    applyQuestionStates();
-                }
-            }
-        }
-        
-        function applyQuestionStates() {
-            Object.entries(questionStates).forEach(([num, state]) => {
-                const cell = document.querySelector(`[data-number="${num}"]`);
-                if (cell) {
-                    cell.classList.remove('correct', 'wrong', 'bookmarked');
-                    if (state.state === 'correct') {
-                        cell.classList.add('correct');
-                    } else if (state.state === 'wrong') {
-                        cell.classList.add('wrong');
-                    }
-                    if (state.bookmarked) {
-                        cell.classList.add('bookmarked');
-                    }
-                }
+
+        // ユーザーIDコピー
+        function copyUserId() {
+            navigator.clipboard.writeText(userId).then(() => {
+                showNotification('IDをコピーしました！');
             });
-            updateStats();
         }
-        
-        // 問題集カード表示（開閉式）
-        function renderBookCards() {
-            const container = document.getElementById('bookCardsContainer');
-            if (!container) return;
+
+        // 連絡先追加
+        function addContact() {
+            const name = document.getElementById('contactName').value.trim();
+            const contactId = document.getElementById('contactId').value.trim();
+
+            if (!name || !contactId) {
+                showNotification('名前とIDを入力してください', 'error');
+                return;
+            }
+
+            contacts.push({ name, id: contactId });
+            localStorage.setItem('contacts', JSON.stringify(contacts));
             
-            let html = '';
+            document.getElementById('contactName').value = '';
+            document.getElementById('contactId').value = '';
             
-            Object.values(books).forEach(book => {
-                const questionCount = countQuestionsInBook(book);
-                html += `
-                    <div class="book-card" id="book-card-${book.id}" onclick="toggleBookCard('${book.id}')">
-                        <div class="book-card-title">📚 ${book.name}</div>
-                        <div class="book-card-meta">
-                            ${Object.keys(book.structure).length}科目 | ${questionCount}問
-                        </div>
-                    </div>
+            renderContacts();
+            showNotification(`${name}さんを追加しました！`);
+        }
+
+        // 連絡先表示
+        function renderContacts() {
+            const grid = document.getElementById('favoritesGrid');
+            grid.innerHTML = '';
+
+            contacts.forEach((contact, index) => {
+                const card = document.createElement('div');
+                card.className = 'favorite-card';
+                card.onclick = () => startCall(contact);
+                card.innerHTML = `
+                    <div class="icon">👤</div>
+                    <div class="name">${contact.name}</div>
+                    <div class="status">タップして発信</div>
                 `;
+                grid.appendChild(card);
             });
-            
-            container.innerHTML = html;
         }
-        
-        // 問題集カードの開閉
-        function toggleBookCard(bookId) {
-            const card = document.getElementById(`book-card-${bookId}`);
+
+        // 通話開始
+        async function startCall(contact) {
+            currentCall = contact;
             
-            // 既に選択されているカードをクリックしたら閉じる
-            if (selectedBookCard === bookId) {
-                card.classList.remove('selected');
-                selectedBookCard = null;
-                currentBook = null;
-                currentPath = [];
-                document.getElementById('breadcrumb').style.display = 'none';
-                document.getElementById('recordHierarchyContainer').style.display = 'none';
-                document.getElementById('questionSection').style.display = 'none';
-            } else {
-                // 他のカードの選択を解除
-                document.querySelectorAll('.book-card').forEach(c => {
-                    c.classList.remove('selected');
+            // 通話画面表示
+            document.getElementById('callPanel').classList.add('active');
+            document.getElementById('callingName').textContent = `${contact.name}に発信中...`;
+            document.getElementById('callStatus').textContent = '呼び出し中...';
+
+            try {
+                // メディア取得
+                localStream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: true, 
+                    video: false 
                 });
-                
-                // 新しいカードを選択
-                card.classList.add('selected');
-                selectedBookCard = bookId;
-                selectBook(bookId);
-            }
-        }
-        
-        // 問題集選択
-        function selectBook(bookId) {
-            currentBook = books[bookId];
-            currentPath = [];
-            
-            document.getElementById('breadcrumb').style.display = 'flex';
-            document.getElementById('questionSection').style.display = 'none';
-            updateBreadcrumb();
-            renderRecordHierarchy();
-        }
-        
-        // 記録用階層表示
-        function renderRecordHierarchy() {
-            const container = document.getElementById('recordHierarchyContainer');
-            if (!container || !currentBook) return;
-            
-            container.style.display = 'block';
-            
-            let structure = currentBook.structure;
-            // パスがある場合は該当箇所まで移動
-            if (currentPath.length > 0) {
-                for (let i = 0; i < currentPath.length; i++) {
-                    if (structure[currentPath[i]]) {
-                        structure = structure[currentPath[i]].children || {};
-                    }
+
+                if (mockMode) {
+                    // モックモード：3秒後に自動接続
+                    setTimeout(() => {
+                        document.getElementById('callStatus').textContent = '通話中';
+                        startCallTimer();
+                        showNotification(`${contact.name}と通話開始しました`);
+                    }, 3000);
+                } else {
+                    // WebRTC接続を開始
+                    setupPeerConnection();
+                    // Firebaseにオファーを送信
+                    sendOffer(contact.id);
                 }
-            }
-            
-            let html = '<div class="hierarchy-list">';
-            html += renderRecordLevel(structure, currentPath);
-            html += '</div>';
-            
-            container.innerHTML = html;
-        }
-        
-        // 記録用階層レベル表示
-        function renderRecordLevel(structure, basePath) {
-            let html = '';
-            
-            Object.entries(structure).forEach(([name, item]) => {
-                const currentPath = [...basePath, name];
-                const pathStr = currentPath.join('/');
-                const hasChildren = item.children && Object.keys(item.children).length > 0;
-                const isExpanded = expandedNodes.has(pathStr);
-                
-                html += `<div class="hierarchy-item">`;
-                
-                if (item.questions) {
-                    // 問題がある場合はクリック可能
-                    html += `
-                        <div class="hierarchy-row" onclick="showQuestions('${pathStr}')">
-                            <span style="width: 20px;"></span>
-                            <span class="hierarchy-icon">${getHierarchyIcon(item.type)}</span>
-                            <span class="hierarchy-label">${name}</span>
-                            <span class="hierarchy-meta">${item.questions.length}問</span>
-                        </div>
-                    `;
-                } else if (hasChildren) {
-                    // 子要素がある場合
-                    html += `
-                        <div class="hierarchy-row" onclick="toggleRecordNode('${pathStr}', event)">
-                            <span class="hierarchy-toggle ${isExpanded ? 'expanded' : ''}">▶</span>
-                            <span class="hierarchy-icon">${getHierarchyIcon(item.type)}</span>
-                            <span class="hierarchy-label">${name}</span>
-                        </div>
-                        <div class="hierarchy-children ${isExpanded ? 'expanded' : ''}">
-                            ${renderRecordLevel(item.children, currentPath)}
-                        </div>
-                    `;
-                }
-                
-                html += '</div>';
-            });
-            
-            return html;
-        }
-        
-        // 記録ノード展開/折りたたみ
-        function toggleRecordNode(path, event) {
-            event.stopPropagation();
-            
-            if (expandedNodes.has(path)) {
-                expandedNodes.delete(path);
-            } else {
-                expandedNodes.add(path);
-            }
-            
-            renderRecordHierarchy();
-        }
-        
-        // パンくずリスト更新
-        function updateBreadcrumb() {
-            const breadcrumb = document.getElementById('breadcrumb');
-            if (!currentBook) return;
-            
-            const items = [currentBook.name, ...currentPath];
-            
-            let html = '';
-            items.forEach((item, index) => {
-                if (index > 0) html += '<span class="breadcrumb-separator">›</span>';
-                html += `<span class="breadcrumb-item ${index === items.length - 1 ? 'active' : ''}" 
-                         onclick="navigateTo(${index - 1})">${item}</span>`;
-            });
-            
-            breadcrumb.innerHTML = html;
-        }
-        
-        // パンくずナビゲーション
-        function navigateTo(index) {
-            if (index === -1) {
-                // 問題集レベルに戻る
-                currentPath = [];
-                document.getElementById('recordHierarchyContainer').style.display = 'block';
-                document.getElementById('questionSection').style.display = 'none';
-                renderRecordHierarchy();
-            } else {
-                // 指定パスに移動
-                currentPath = currentPath.slice(0, index);
-                document.getElementById('recordHierarchyContainer').style.display = 'block';
-                document.getElementById('questionSection').style.display = 'none';
-                renderRecordHierarchy();
-            }
-            updateBreadcrumb();
-        }
-        
-        // 問題表示
-        function showQuestions(pathStr) {
-            const pathArray = pathStr.split('/');
-            currentPath = pathArray;
-            updateBreadcrumb();
-            
-            let current = currentBook.structure;
-            for (let i = 0; i < pathArray.length; i++) {
-                if (current[pathArray[i]]) {
-                    if (i === pathArray.length - 1 && current[pathArray[i]].questions) {
-                        const item = current[pathArray[i]];
-                        document.getElementById('recordHierarchyContainer').style.display = 'none';
-                        document.getElementById('questionSection').style.display = 'block';
-                        
-                        const grid = document.getElementById('questionGrid');
-                        grid.innerHTML = '';
-                        questionStates = {};
-                        
-                        item.questions.forEach(num => {
-                            const cell = document.createElement('div');
-                            cell.className = 'question-cell';
-                            cell.textContent = num;
-                            cell.dataset.number = num;
-                            cell.onclick = () => toggleQuestion(num);
-                            
-                            grid.appendChild(cell);
-                            
-                            questionStates[num] = {
-                                state: null,
-                                bookmarked: false
-                            };
-                        });
-                        
-                        // 保存された状態を読み込み
-                        loadQuestionStatesForPath();
-                        return;
-                    }
-                    current = current[pathArray[i]].children || {};
-                }
+            } catch (error) {
+                console.error('メディア取得エラー:', error);
+                showNotification('マイクへのアクセスが必要です', 'error');
+                endCall();
             }
         }
-        
-        // メインタブ切り替え
-        function switchMainTab(tabName, event) {
-            document.querySelectorAll('.main-tab').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            document.getElementById(tabName + '-tab').classList.add('active');
-            
-            if (tabName === 'analysis') {
-                updateChartBars();
-                updateHeatmap();
-                updateWeaknessAnalysis();
-            } else if (tabName === 'progress') {
-                updateProgressContent();
-                drawRadarChart();
-            }
-        }
-        
-        // フッタータブ切り替え
-        function switchFooterTab(tabName, event) {
-            const modal = document.getElementById('footerModal');
-            const modalTitle = document.getElementById('modalTitle');
-            const modalBody = document.getElementById('modalBody');
-            
-            const titles = {
-                'register': '📝 問題集登録',
-                'history': '📅 学習履歴',
-                'results': '🏆 獲得バッジ',
-                'settings': '⚙️ 設定'
+
+        // WebRTC設定
+        function setupPeerConnection() {
+            const configuration = {
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' }
+                ]
             };
-            
-            modalTitle.textContent = titles[tabName];
-            
-            switch(tabName) {
-                case 'register':
-                    modalBody.innerHTML = getRegisterContent();
-                    break;
-                case 'history':
-                    modalBody.innerHTML = getHistoryContent();
-                    break;
-                case 'results':
-                    modalBody.innerHTML = getResultsContent();
-                    break;
-                case 'settings':
-                    modalBody.innerHTML = getSettingsContent();
-                    break;
+
+            peerConnection = new RTCPeerConnection(configuration);
+
+            // ローカルストリームを追加
+            localStream.getTracks().forEach(track => {
+                peerConnection.addTrack(track, localStream);
+            });
+
+            // リモートストリーム受信
+            peerConnection.ontrack = (event) => {
+                remoteStream = event.streams[0];
+                // オーディオ要素で再生
+                const audio = new Audio();
+                audio.srcObject = remoteStream;
+                audio.play();
+            };
+
+            // ICE候補
+            peerConnection.onicecandidate = (event) => {
+                if (event.candidate && !mockMode) {
+                    // FirebaseにICE候補を送信
+                    database.ref(`calls/${currentCall.id}/ice-candidates/${userId}`).push(event.candidate);
+                }
+            };
+        }
+
+        // オファー送信（実際のFirebase実装用）
+        async function sendOffer(targetId) {
+            const offer = await peerConnection.createOffer();
+            await peerConnection.setLocalDescription(offer);
+
+            if (!mockMode && database) {
+                database.ref(`calls/${targetId}/offer`).set({
+                    from: userId,
+                    fromName: 'ユーザー',
+                    offer: offer,
+                    timestamp: Date.now()
+                });
             }
+        }
+
+        // 着信リスナー（実際のFirebase実装用）
+        function listenForCalls() {
+            if (mockMode || !database) return;
+
+            database.ref(`calls/${userId}/offer`).on('value', async (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    // 着信表示
+                    document.getElementById('incomingCall').classList.add('active');
+                    document.getElementById('callerName').textContent = `${data.fromName}から着信`;
+                    
+                    // 通知
+                    if (Notification.permission === 'granted') {
+                        new Notification('着信', {
+                            body: `${data.fromName}から着信があります`,
+                            icon: '📞'
+                        });
+                    }
+
+                    // 着信音を鳴らす（実装は省略）
+                    playRingtone();
+                }
+            });
+        }
+
+        // 通話タイマー
+        function startCallTimer() {
+            callStartTime = Date.now();
+            callTimer = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - callStartTime) / 1000);
+                const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
+                const seconds = (elapsed % 60).toString().padStart(2, '0');
+                document.getElementById('callTimer').textContent = `${minutes}:${seconds}`;
+            }, 1000);
+        }
+
+        // ミュート切り替え
+        function toggleMute() {
+            const btn = document.getElementById('muteBtn');
+            if (localStream) {
+                const audioTrack = localStream.getAudioTracks()[0];
+                audioTrack.enabled = !audioTrack.enabled;
+                btn.classList.toggle('active');
+                showNotification(audioTrack.enabled ? 'ミュート解除' : 'ミュート');
+            }
+        }
+
+        // スピーカー切り替え
+        function toggleSpeaker() {
+            const btn = document.getElementById('speakerBtn');
+            btn.classList.toggle('active');
+            showNotification(btn.classList.contains('active') ? 'スピーカーON' : 'スピーカーOFF');
+        }
+
+        // 録音切り替え
+        function toggleRecord() {
+            const btn = document.getElementById('recordBtn');
             
-            modal.classList.add('active');
+            if (!mediaRecorder || mediaRecorder.state === 'inactive') {
+                startRecording();
+                btn.classList.add('active');
+                showNotification('録音開始');
+            } else {
+                stopRecording();
+                btn.classList.remove('active');
+                showNotification('録音停止');
+            }
         }
-        
-        function closeFooterModal() {
-            document.getElementById('footerModal').classList.remove('active');
+
+        // 録音開始
+        function startRecording() {
+            if (!localStream) return;
+
+            recordedChunks = [];
+            mediaRecorder = new MediaRecorder(localStream);
+
+            mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    recordedChunks.push(event.data);
+                }
+            };
+
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(recordedChunks, { type: 'audio/webm' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `recording_${Date.now()}.webm`;
+                a.click();
+            };
+
+            mediaRecorder.start();
         }
-        
-        // 問題集登録コンテンツ
-        function getRegisterContent() {
-            let html = `
-                <div class="save-button" onclick="showNewBookDialog()">新規作成</div>
-                <div style="margin-top: 20px;">
-                    <h4>登録済み問題集</h4>
-                    <div id="registerHierarchy"></div>
-                </div>
-            `;
+
+        // 録音停止
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+            }
+        }
+
+        // 通話終了
+        function endCall() {
+            // タイマー停止
+            if (callTimer) {
+                clearInterval(callTimer);
+                callTimer = null;
+            }
+
+            // 録音停止
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                stopRecording();
+            }
+
+            // ストリーム停止
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+                localStream = null;
+            }
+
+            // WebRTC接続終了
+            if (peerConnection) {
+                peerConnection.close();
+                peerConnection = null;
+            }
+
+            // UI更新
+            document.getElementById('callPanel').classList.remove('active');
+            document.getElementById('muteBtn').classList.remove('active');
+            document.getElementById('speakerBtn').classList.remove('active');
+            document.getElementById('recordBtn').classList.remove('active');
+            
+            currentCall = null;
+        }
+
+        // 着信応答
+        function acceptCall() {
+            document.getElementById('incomingCall').classList.remove('active');
+            // 実際の実装では、ここでWebRTC接続を確立
+            showNotification('通話を開始しました');
+        }
+
+        // 着信拒否
+        function rejectCall() {
+            document.getElementById('incomingCall').classList.remove('active');
+            showNotification('着信を拒否しました');
+        }
+
+        // 着信音（ダミー）
+        function playRingtone() {
+            // 実際の実装では音声ファイルを再生
+            console.log('♪ 着信音再生中...');
+        }
+
+        // 通知表示
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.background = type === 'error' ? '#e53e3e' : '#48bb78';
+            notification.classList.add('show');
             
             setTimeout(() => {
-                renderRegisterHierarchy();
-            }, 100);
-            
-            return html;
+                notification.classList.remove('show');
+            }, 3000);
         }
-        
-        // 登録用階層表示（記録入力と同じデザイン）
-        function renderRegisterHierarchy() {
-            const container = document.getElementById('registerHierarchy');
-            if (!container) return;
-            
-            let html = '<div class="hierarchy-list">';
-            
-            Object.values(books).forEach(book => {
-                const nodeId = `book_${book.id}`;
-                const isExpanded = expandedNodes.has(nodeId);
-                
-                html += `
-                    <div class="hierarchy-item">
-                        <div class="hierarchy-row" onclick="toggleRegisterNode('${nodeId}', event)">
-                            <span class="hierarchy-toggle ${isExpanded ? 'expanded' : ''}">▶</span>
-                            <span class="hierarchy-icon">📚</span>
-                            <span class="hierarchy-label">${book.name}</span>
-                            <div class="hierarchy-actions">
-                                <button class="hierarchy-action" onclick="addHierarchy('${book.id}', null, 'subject', event)" title="科目追加">+</button>
-                                <button class="hierarchy-action delete" onclick="deleteBook('${book.id}', event)" title="削除">🗑️</button>
-                            </div>
-                        </div>
-                        <div class="hierarchy-children ${isExpanded ? 'expanded' : ''}">
-                            ${renderRegisterLevel(book.structure, book.id, [])}
-                        </div>
-                    </div>
-                `;
-            });
-            
-            html += '</div>';
-            container.innerHTML = html;
-        }
-        
-        // 登録階層レベル表示
-        function renderRegisterLevel(structure, bookId, path) {
-            let html = '';
-            
-            Object.entries(structure).forEach(([name, item]) => {
-                const currentPath = [...path, name];
-                const nodeId = `${bookId}_${currentPath.join('_')}`;
-                const hasChildren = item.children && Object.keys(item.children).length > 0;
-                const isExpanded = expandedNodes.has(nodeId);
-                
-                html += `
-                    <div class="hierarchy-item">
-                        <div class="hierarchy-row" ${hasChildren ? `onclick="toggleRegisterNode('${nodeId}', event)"` : ''}>
-                            ${hasChildren ? `<span class="hierarchy-toggle ${isExpanded ? 'expanded' : ''}">▶</span>` : '<span style="width: 20px; display: inline-block;"></span>'}
-                            <span class="hierarchy-icon">${getHierarchyIcon(item.type)}</span>
-                            <span class="hierarchy-label">${name}</span>
-                `;
-                
-                // 問題数表示
-                if (item.questions) {
-                    html += `<span class="hierarchy-meta">${item.questions.length}問</span>`;
-                }
-                
-                // アクションボタン
-                html += '<div class="hierarchy-actions">';
-                
-                if (item.type === 'subject') {
-                    html += `<button class="hierarchy-action" onclick="addHierarchy('${bookId}', '${currentPath.join('/')}', 'chapter', event)" title="章追加">+</button>`;
-                } else if (item.type === 'chapter') {
-                    html += `<button class="hierarchy-action" onclick="addHierarchy('${bookId}', '${currentPath.join('/')}', 'section', event)" title="節追加">+</button>`;
-                } else if (item.type === 'section' && !item.questions) {
-                    html += `<button class="hierarchy-action" onclick="addHierarchy('${bookId}', '${currentPath.join('/')}', 'subsection', event)" title="項追加">+</button>`;
-                }
-                
-                html += `<button class="hierarchy-action delete" onclick="deleteHierarchy('${bookId}', '${currentPath.join('/')}', event)" title="削除">🗑️</button>`;
-                html += '</div></div>';
-                
-                if (hasChildren) {
-                    html += `
-                        <div class="hierarchy-children ${isExpanded ? 'expanded' : ''}">
-                            ${renderRegisterLevel(item.children, bookId, currentPath)}
-                        </div>
-                    `;
-                }
-                
-                html += '</div>';
-            });
-            
-            return html;
-        }
-        
-        // 登録ノード展開/折りたたみ
-        function toggleRegisterNode(nodeId, event) {
-            event.stopPropagation();
-            
-            if (expandedNodes.has(nodeId)) {
-                expandedNodes.delete(nodeId);
-            } else {
-                expandedNodes.add(nodeId);
-            }
-            
-            renderRegisterHierarchy();
-        }
-        
-        // 階層アイコン取得
-        function getHierarchyIcon(type) {
-            const icons = {
-                'subject': '📂',
-                'chapter': '📄',
-                'section': '📑',
-                'subsection': '📝'
-            };
-            return icons[type] || '📄';
-        }
-        
-        // ダイアログ表示
-        function showDialog(title, body, onConfirm) {
-            document.getElementById('dialogTitle').textContent = title;
-            document.getElementById('dialogBody').innerHTML = body;
-            document.getElementById('dialogConfirmBtn').onclick = onConfirm;
-            document.getElementById('dialogOverlay').style.display = 'block';
-            document.getElementById('inputDialog').style.display = 'block';
-        }
-        
-        function closeDialog() {
-            document.getElementById('dialogOverlay').style.display = 'none';
-            document.getElementById('inputDialog').style.display = 'none';
-        }
-        
-        // 新規問題集作成ダイアログ
-        function showNewBookDialog() {
-            const dialogBody = `
-                <div class="form-group">
-                    <label class="form-label">問題集名</label>
-                    <input type="text" class="form-control" id="newBookName" placeholder="問題集名を入力">
-                </div>
-            `;
-            
-            showDialog('新規問題集作成', dialogBody, () => {
-                const name = document.getElementById('newBookName').value;
-                if (!name) {
-                    alert('問題集名を入力してください');
-                    return;
-                }
-                
-                const bookId = 'book_' + Date.now();
-                books[bookId] = {
-                    id: bookId,
-                    name: name,
-                    examType: 'gyousei',
-                    structure: {},
-                    createdAt: new Date().toISOString()
-                };
-                
-                saveBooksToStorage();
-                renderBookCards();
-                renderRegisterHierarchy();
-                updateHeatmapBookSelect();
-                closeDialog();
-                alert('作成しました');
-            });
-        }
-        
-        // 階層追加
-        function addHierarchy(bookId, parentPath, type, event) {
-            event.stopPropagation();
-            
-            let dialogBody = `
-                <div class="form-group">
-                    <label class="form-label">${getTypeLabel(type)}の名前</label>
-                    <input type="text" class="form-control" id="hierarchyName" placeholder="名前を入力">
-                </div>
-            `;
-            
-            if (type === 'section' || type === 'subsection') {
-                dialogBody += `
-                    <div class="form-group">
-                        <label class="form-label">問題数（任意）</label>
-                        <input type="number" class="form-control" id="questionCount" min="0" placeholder="問題数を入力（空欄可）">
-                    </div>
-                `;
-            }
-            
-            showDialog(`${getTypeLabel(type)}を追加`, dialogBody, () => {
-                const name = document.getElementById('hierarchyName').value;
-                if (!name) {
-                    alert('名前を入力してください');
-                    return;
-                }
-                
-                let questions = null;
-                if (type === 'section' || type === 'subsection') {
-                    const count = document.getElementById('questionCount').value;
-                    if (count && !isNaN(count) && parseInt(count) > 0) {
-                        questions = [];
-                        for (let i = 1; i <= parseInt(count); i++) {
-                            questions.push(i);
-                        }
-                    }
-                }
-                
-                const book = books[bookId];
-                let target = book.structure;
-                
-                if (parentPath) {
-                    const pathArray = parentPath.split('/');
-                    pathArray.forEach(p => {
-                        if (target[p]) {
-                            if (!target[p].children) {
-                                target[p].children = {};
-                            }
-                            target = target[p].children;
-                        }
-                    });
-                }
-                
-                if (questions) {
-                    target[name] = {
-                        type: type,
-                        questions: questions
-                    };
-                } else {
-                    target[name] = {
-                        type: type,
-                        children: {}
-                    };
-                }
-                
-                saveBooksToStorage();
-                renderBookCards();
-                renderRegisterHierarchy();
-                closeDialog();
-            });
-        }
-        
-        // 階層削除
-        function deleteHierarchy(bookId, path, event) {
-            event.stopPropagation();
-            
-            if (!confirm('この項目を削除しますか？')) return;
-            
-            const book = books[bookId];
-            const pathArray = path.split('/');
-            
-            if (pathArray.length === 1) {
-                delete book.structure[pathArray[0]];
-            } else {
-                let target = book.structure;
-                for (let i = 0; i < pathArray.length - 1; i++) {
-                    if (target[pathArray[i]]) {
-                        if (i === pathArray.length - 2) {
-                            delete target[pathArray[i]].children[pathArray[pathArray.length - 1]];
-                        } else {
-                            target = target[pathArray[i]].children || {};
-                        }
-                    }
-                }
-            }
-            
-            saveBooksToStorage();
-            renderBookCards();
-            renderRegisterHierarchy();
-        }
-        
-        // 問題集削除
-        function deleteBook(bookId, event) {
-            event.stopPropagation();
-            
-            if (!confirm('この問題集を削除しますか？')) return;
-            
-            delete books[bookId];
-            saveBooksToStorage();
-            renderBookCards();
-            renderRegisterHierarchy();
-            updateHeatmapBookSelect();
-        }
-        
-        // 学習履歴コンテンツ
-        function getHistoryContent() {
-            let html = '<div class="card">';
-            
-            allRecords.slice(-20).reverse().forEach(record => {
-                const date = new Date(record.timestamp);
-                html += `
-                    <div style="padding: 10px; border-bottom: 1px solid var(--light);">
-                        <div style="font-weight: 600;">${record.path.join(' › ')}</div>
-                        <div style="font-size: 12px; color: var(--gray);">
-                            ${date.toLocaleDateString('ja-JP')} ${date.toLocaleTimeString('ja-JP', {hour: '2-digit', minute: '2-digit'})}
-                            | 正答率: ${record.stats.rate}
-                        </div>
-                    </div>
-                `;
-            });
-            
-            html += '</div>';
-            return html;
-        }
-        
-        // 実績コンテンツ
-        function getResultsContent() {
-            const stats = calculateOverallProgress();
-            const streakDays = localStorage.getItem('streakDays') || '0';
-            
-            const badges = [
-                { 
-                    icon: '🎯', 
-                    label: '初学習', 
-                    unlocked: allRecords.length > 0,
-                    value: allRecords.length > 0 ? '達成' : '未達成'
-                },
-                { 
-                    icon: '📚', 
-                    label: '100問', 
-                    unlocked: stats.totalAnswered >= 100,
-                    value: `${stats.totalAnswered}問`
-                },
-                { 
-                    icon: '🔥', 
-                    label: '7日連続', 
-                    unlocked: parseInt(streakDays) >= 7,
-                    value: `${streakDays}日`
-                },
-                { 
-                    icon: '⭐', 
-                    label: '正答90%', 
-                    unlocked: stats.overallRate >= 90,
-                    value: `${stats.overallRate}%`
-                },
-                { 
-                    icon: '🏆', 
-                    label: '1000問', 
-                    unlocked: stats.totalAnswered >= 1000,
-                    value: stats.totalAnswered >= 1000 ? '達成' : `${stats.totalAnswered}問`
-                },
-                { 
-                    icon: '🚀', 
-                    label: '全科目', 
-                    unlocked: Object.keys(calculateSubjectStats()).length >= 4,
-                    value: `${Object.keys(calculateSubjectStats()).length}科目`
-                },
-                { 
-                    icon: '💎', 
-                    label: '30日継続', 
-                    unlocked: parseInt(streakDays) >= 30,
-                    value: `${streakDays}日`
-                },
-                { 
-                    icon: '👑', 
-                    label: 'マスター', 
-                    unlocked: stats.totalAnswered >= 5000 && stats.overallRate >= 85,
-                    value: stats.totalAnswered >= 5000 ? '達成' : '未達成'
-                }
-            ];
-            
-            let html = `
-                <div class="card">
-                    <h4 style="text-align: center; margin-bottom: 20px;">獲得バッジ</h4>
-                    <div class="achievement-grid">
-            `;
-            
-            badges.forEach(badge => {
-                html += `
-                    <div class="achievement-card">
-                        <div class="achievement-icon ${!badge.unlocked ? 'disabled' : ''}">${badge.icon}</div>
-                        <div class="achievement-label">${badge.label}</div>
-                        <div class="achievement-value">${badge.value}</div>
-                    </div>
-                `;
-            });
-            
-            html += `
-                    </div>
-                </div>
-            `;
-            
-            return html;
-        }
-        
-        // 設定コンテンツ
-        function getSettingsContent() {
-            let html = `
-                <div class="card">
-                    <h4>📖 使い方</h4>
-                    <ol style="margin-left: 20px; line-height: 1.8;">
-                        <li>「登録」から問題集を作成し、階層構造を設定</li>
-                        <li>「記録入力」で問題を解いた結果を記録</li>
-                        <li>「分析」で学習状況を確認</li>
-                        <li>「進捗」で全体の進み具合を把握</li>
-                    </ol>
-                </div>
-                
-                <div class="card">
-                    <h4>🗑️ 問題集を削除</h4>
-            `;
-            
-            Object.values(books).forEach(book => {
-                html += `
-                    <div class="delete-list-item">
-                        <div>
-                            <div style="font-weight: 600;">${book.name}</div>
-                            <div style="font-size: 12px; color: var(--gray);">${Object.keys(book.structure).length}科目</div>
-                        </div>
-                        <button class="delete-btn" onclick="deleteBookFromSettings('${book.id}')">削除</button>
-                    </div>
-                `;
-            });
-            
-            html += `
-                </div>
-                
-                <div class="card">
-                    <button class="save-button" style="background: var(--danger);" onclick="clearAllData()">すべてのデータを削除</button>
-                </div>
-            `;
-            
-            return html;
-        }
-        
-        // 設定から問題集削除
-        function deleteBookFromSettings(bookId) {
-            if (!confirm('この問題集を削除しますか？')) return;
-            
-            delete books[bookId];
-            saveBooksToStorage();
-            renderBookCards();
-            updateHeatmapBookSelect();
-            closeFooterModal();
-            alert('削除しました');
-        }
-        
-        // ヒートマップ問題集選択更新
-        function updateHeatmapBookSelect() {
-            const select = document.getElementById('heatmapBookSelect');
-            if (!select) return;
-            
-            select.innerHTML = '<option value="">問題集を選択</option>';
-            
-            Object.values(books).forEach(book => {
-                const option = document.createElement('option');
-                option.value = book.id;
-                option.textContent = book.name;
-                select.appendChild(option);
-            });
-        }
-        
-        // ヒートマップ更新
-        function updateHeatmap() {
-            const container = document.getElementById('heatmapGrid');
-            const select = document.getElementById('heatmapBookSelect');
-            if (!container || !select) return;
-            
-            const bookId = select.value;
-            if (!bookId) {
-                container.innerHTML = '<p style="color: var(--gray); text-align: center;">問題集を選択してください</p>';
-                return;
-            }
-            
-            const book = books[bookId];
-            if (!book) return;
-            
-            let html = '';
-            const allQuestions = getAllQuestionsFromBook(book);
-            let currentLabel = '';
-            
-            allQuestions.forEach(q => {
-                // ラベル表示
-                const label = `${q.subject} › ${q.chapter}${q.section ? ' › ' + q.section : ''}${q.subsection ? ' › ' + q.subsection : ''}`;
-                if (label !== currentLabel) {
-                    currentLabel = label;
-                    html += `<div class="heatmap-label">${label}</div>`;
-                }
-                
-                const state = getQuestionStateFromRecords(book.id, q);
-                let cellClass = '';
-                
-                if (state.wrong) cellClass = 'wrong';
-                else if (state.correct) cellClass = 'correct';
-                
-                if (state.bookmarked) {
-                    cellClass += ' bookmarked';
-                }
-                
-                html += `<div class="heatmap-cell ${cellClass}">${q.number}</div>`;
-            });
-            
-            container.innerHTML = html || '<p style="color: var(--gray); text-align: center;">データがありません</p>';
-        }
-        
-        // レーダーチャート描画
-        function drawRadarChart() {
-            const canvas = document.getElementById('radarChart');
-            if (!canvas) return;
-            
-            const ctx = canvas.getContext('2d');
-            const centerX = 150;
-            const centerY = 150;
-            const radius = 100;
-            
-            const subjectStats = calculateSubjectStats();
-            const subjects = Object.keys(subjectStats);
-            
-            if (subjects.length === 0) {
-                ctx.clearRect(0, 0, 300, 300);
-                ctx.fillStyle = '#6b7280';
-                ctx.font = '14px sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillText('データがありません', centerX, centerY);
-                return;
-            }
-            
-            const angleStep = (Math.PI * 2) / subjects.length;
-            
-            // Clear canvas
-            ctx.clearRect(0, 0, 300, 300);
-            
-            // Draw grid
-            ctx.strokeStyle = '#e5e7eb';
-            ctx.lineWidth = 1;
-            
-            for (let i = 1; i <= 5; i++) {
-                ctx.beginPath();
-                for (let j = 0; j < subjects.length; j++) {
-                    const angle = j * angleStep - Math.PI / 2;
-                    const x = centerX + Math.cos(angle) * (radius * i / 5);
-                    const y = centerY + Math.sin(angle) * (radius * i / 5);
-                    
-                    if (j === 0) {
-                        ctx.moveTo(x, y);
-                    } else {
-                        ctx.lineTo(x, y);
-                    }
-                }
-                ctx.closePath();
-                ctx.stroke();
-            }
-            
-            // Draw lines from center
-            for (let i = 0; i < subjects.length; i++) {
-                const angle = i * angleStep - Math.PI / 2;
-                const x = centerX + Math.cos(angle) * radius;
-                const y = centerY + Math.sin(angle) * radius;
-                
-                ctx.beginPath();
-                ctx.moveTo(centerX, centerY);
-                ctx.lineTo(x, y);
-                ctx.stroke();
-            }
-            
-            // Draw data
-            ctx.fillStyle = 'rgba(52, 152, 219, 0.3)';
-            ctx.strokeStyle = '#3498db';
-            ctx.lineWidth = 2;
-            
-            ctx.beginPath();
-            subjects.forEach((subject, i) => {
-                const stats = subjectStats[subject];
-                const percentage = stats.total > 0 ? (stats.correct / stats.total) : 0;
-                const angle = i * angleStep - Math.PI / 2;
-                const x = centerX + Math.cos(angle) * (radius * percentage);
-                const y = centerY + Math.sin(angle) * (radius * percentage);
-                
-                if (i === 0) {
-                    ctx.moveTo(x, y);
-                } else {
-                    ctx.lineTo(x, y);
-                }
-            });
-            ctx.closePath();
-            ctx.fill();
-            ctx.stroke();
-            
-            // Draw labels
-            ctx.fillStyle = '#1f2937';
-            ctx.font = '12px sans-serif';
-            ctx.textAlign = 'center';
-            
-            subjects.forEach((subject, i) => {
-                const angle = i * angleStep - Math.PI / 2;
-                const x = centerX + Math.cos(angle) * (radius + 20);
-                const y = centerY + Math.sin(angle) * (radius + 20);
-                
-                ctx.fillText(subject, x, y);
-            });
-        }
-        
-        // チャート切り替え
-        function switchChartView(view, btn) {
-            currentChartView = view;
-            document.querySelectorAll('.chart-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            updateChartBars();
-        }
-        
-        // チャート更新
-        function updateChartBars() {
-            const container = document.getElementById('chartBars');
-            if (!container) return;
-            
-            let data = [];
-            let labels = [];
-            const today = new Date();
-            
-            if (currentChartView === 'day') {
-                // 過去7日間
-                for (let i = 6; i >= 0; i--) {
-                    const date = new Date();
-                    date.setDate(today.getDate() - i);
-                    const count = getQuestionCountByDate(date);
-                    data.push(count);
-                    labels.push(date.getDate() + '日');
-                }
-            } else if (currentChartView === 'week') {
-                // 週間（月〜日）
-                const days = ['月', '火', '水', '木', '金', '土', '日'];
-                const weekData = getWeekData();
-                data = weekData;
-                labels = days;
-            } else if (currentChartView === 'month') {
-                // 月間（4週分）
-                for (let i = 3; i >= 0; i--) {
-                    const weekStart = new Date();
-                    weekStart.setDate(today.getDate() - (i * 7 + 6));
-                    const weekEnd = new Date();
-                    weekEnd.setDate(today.getDate() - (i * 7));
-                    const count = getQuestionCountByDateRange(weekStart, weekEnd);
-                    data.push(count);
-                    labels.push(`第${4-i}週`);
-                }
-            }
-            
-            const maxValue = Math.max(...data, 1);
-            
-            let html = '';
-            data.forEach((value, index) => {
-                const height = maxValue > 0 ? (value / maxValue) * 100 : 0;
-                const isToday = currentChartView === 'day' && index === data.length - 1;
-                
-                html += `
-                    <div class="chart-bar-wrapper">
-                        <div class="chart-bar-value">${value}</div>
-                        <div class="chart-bar-container">
-                            <div class="chart-bar ${isToday ? 'today' : ''}" style="height: ${height}%;"></div>
-                        </div>
-                        <div class="chart-bar-label">${labels[index]}</div>
-                    </div>
-                `;
-            });
-            
-            container.innerHTML = html;
-        }
-        
-        // 日付別問題数取得
-        function getQuestionCountByDate(date) {
-            let count = 0;
-            const dateStr = date.toDateString();
-            
-            allRecords.forEach(record => {
-                const recordDate = new Date(record.timestamp);
-                if (recordDate.toDateString() === dateStr) {
-                    count += record.stats.total || 0;
-                }
-            });
-            
-            return count;
-        }
-        
-        // 日付範囲別問題数取得
-        function getQuestionCountByDateRange(startDate, endDate) {
-            let count = 0;
-            
-            allRecords.forEach(record => {
-                const recordDate = new Date(record.timestamp);
-                if (recordDate >= startDate && recordDate <= endDate) {
-                    count += record.stats.total || 0;
-                }
-            });
-            
-            return count;
-        }
-        
-        // 週間データ取得
-        function getWeekData() {
-            const weekData = [0, 0, 0, 0, 0, 0, 0];
-            const today = new Date();
-            const startOfWeek = new Date(today);
-            startOfWeek.setDate(today.getDate() - today.getDay() + 1);
-            
-            allRecords.forEach(record => {
-                const recordDate = new Date(record.timestamp);
-                if (recordDate >= startOfWeek) {
-                    const dayIndex = (recordDate.getDay() + 6) % 7;
-                    weekData[dayIndex] += record.stats.total || 0;
-                }
-            });
-            
-            return weekData;
-        }
-        
-        // 問題集から全問題を取得
-        function getAllQuestionsFromBook(book) {
-            const questions = [];
-            
-            function traverse(structure, path = []) {
-                Object.entries(structure).forEach(([name, item]) => {
-                    const newPath = [...path, name];
-                    
-                    if (item.questions) {
-                        item.questions.forEach(num => {
-                            questions.push({
-                                number: num,
-                                subject: newPath[0],
-                                chapter: newPath[1],
-                                section: newPath[2],
-                                subsection: newPath[3],
-                                path: newPath
-                            });
-                        });
-                    }
-                    
-                    if (item.children) {
-                        traverse(item.children, newPath);
-                    }
-                });
-            }
-            
-            traverse(book.structure);
-            return questions;
-        }
-        
-        // 記録から問題の状態を取得
-        function getQuestionStateFromRecords(bookId, question) {
-            let state = { correct: false, wrong: false, bookmarked: false };
-            
-            allRecords.forEach(record => {
-                if (record.bookId === bookId) {
-                    const pathMatch = record.path.join('/') === question.path.join('/');
-                    if (pathMatch && record.questions[question.number]) {
-                        const qState = record.questions[question.number];
-                        if (qState.state === 'correct') state.correct = true;
-                        if (qState.state === 'wrong') state.wrong = true;
-                        if (qState.bookmarked) state.bookmarked = true;
-                    }
-                }
-            });
-            
-            return state;
-        }
-        
-        // 弱点分析更新
-        function updateWeaknessAnalysis() {
-            const container = document.getElementById('weaknessAnalysis');
-            if (!container) return;
-            
-            const subjectStats = calculateSubjectStats();
-            const weaknesses = [];
-            
-            Object.entries(subjectStats).forEach(([subject, stats]) => {
-                if (stats.total > 0) {
-                    const percentage = Math.round((stats.correct / stats.total) * 100);
-                    if (percentage < 70) {
-                        weaknesses.push({
-                            subject,
-                            percentage,
-                            wrong: stats.wrong
-                        });
-                    }
-                }
-            });
-            
-            weaknesses.sort((a, b) => a.percentage - b.percentage);
-            
-            if (weaknesses.length === 0) {
-                container.innerHTML = '<p style="color: var(--gray);">弱点分野はありません</p>';
-            } else {
-                container.innerHTML = weaknesses.map(w => `
-                    <div style="padding: 10px; background: #fef2f2; border-left: 3px solid var(--danger); border-radius: 5px; margin-bottom: 10px;">
-                        <div style="font-weight: 600; color: var(--danger);">${w.subject}</div>
-                        <div style="font-size: 14px;">正答率: ${w.percentage}% | 間違い: ${w.wrong}問</div>
-                    </div>
-                `).join('');
-            }
-        }
-        
-        // 進捗コンテンツ更新
-        function updateProgressContent() {
-            const overallContainer = document.getElementById('overallProgress');
-            
-            const stats = calculateOverallProgress();
-            
-            overallContainer.innerHTML = `
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-value">${stats.totalQuestions}</div>
-                        <div class="stat-label">総問題数</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">${stats.totalAnswered}</div>
-                        <div class="stat-label">解答済み</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">${stats.totalCorrect}</div>
-                        <div class="stat-label">正解数</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">${stats.overallRate}%</div>
-                        <div class="stat-label">正答率</div>
-                    </div>
-                </div>
-                <div class="progress-bar-container">
-                    <div class="progress-bar-fill" style="width: ${stats.progressPercentage}%;"></div>
-                </div>
-                <p style="text-align: center; margin-top: 10px;">進捗率: ${stats.progressPercentage}%</p>
-            `;
-        }
-        
-        // ブックマークモード切り替え
-        function toggleBookmarkMode() {
-            bookmarkMode = !bookmarkMode;
-            const btn = document.getElementById('bookmarkBtn');
-            btn.classList.toggle('active');
-        }
-        
-        // 問題選択
-        function toggleQuestion(num) {
-            if (bookmarkMode) {
-                questionStates[num].bookmarked = !questionStates[num].bookmarked;
-                const cell = document.querySelector(`[data-number="${num}"]`);
-                cell.classList.toggle('bookmarked');
-            } else {
-                const cell = document.querySelector(`[data-number="${num}"]`);
-                const state = questionStates[num];
-                
-                if (state.state === null) {
-                    state.state = 'correct';
-                    cell.classList.add('correct');
-                } else if (state.state === 'correct') {
-                    state.state = 'wrong';
-                    cell.classList.remove('correct');
-                    cell.classList.add('wrong');
-                } else {
-                    state.state = null;
-                    cell.classList.remove('wrong');
-                }
-            }
-            
-            saveQuestionStatesForPath();
-            updateStats();
-        }
-        
-        // 正解マーク
-        function markCorrect() {
-            Object.keys(questionStates).forEach(num => {
-                if (questionStates[num].state === null) {
-                    questionStates[num].state = 'correct';
-                    const cell = document.querySelector(`[data-number="${num}"]`);
-                    if (cell) {
-                        cell.classList.add('correct');
-                    }
-                }
-            });
-            saveQuestionStatesForPath();
-            updateStats();
-        }
-        
-        // 不正解マーク
-        function markWrong() {
-            Object.keys(questionStates).forEach(num => {
-                if (questionStates[num].state === null) {
-                    questionStates[num].state = 'wrong';
-                    const cell = document.querySelector(`[data-number="${num}"]`);
-                    if (cell) {
-                        cell.classList.add('wrong');
-                    }
-                }
-            });
-            saveQuestionStatesForPath();
-            updateStats();
-        }
-        
-        // 統計更新
-        function updateStats() {
-            let total = 0;
-            let correct = 0;
-            let wrong = 0;
-            
-            Object.values(questionStates).forEach(state => {
-                if (state.state !== null) {
-                    total++;
-                    if (state.state === 'correct') {
-                        correct++;
-                    } else {
-                        wrong++;
-                    }
-                }
-            });
-            
-            const rate = total > 0 ? Math.round((correct / total) * 100) : 0;
-            
-            document.getElementById('totalCount').textContent = total;
-            document.getElementById('correctCount').textContent = correct;
-            document.getElementById('wrongCount').textContent = wrong;
-            document.getElementById('correctRate').textContent = rate + '%';
-        }
-        
-        // 記録保存
-        function saveRecord() {
-            const record = {
-                bookId: currentBook.id,
-                bookName: currentBook.name,
-                path: currentPath,
-                questions: questionStates,
-                timestamp: new Date().toISOString(),
-                stats: {
-                    total: parseInt(document.getElementById('totalCount').textContent),
-                    correct: parseInt(document.getElementById('correctCount').textContent),
-                    wrong: parseInt(document.getElementById('wrongCount').textContent),
-                    rate: document.getElementById('correctRate').textContent
-                }
-            };
-            
-            saveToHistory(record);
-            updateDailyStreak();
-            loadAllRecords();
-            
-            // 保存後も同じページに留まる
-            alert('保存しました！');
-        }
-        
-        // 履歴保存
-        function saveToHistory(record) {
-            let history = localStorage.getItem('studyHistory');
-            history = history ? JSON.parse(history) : [];
-            history.push(record);
-            
-            if (history.length > 1000) {
-                history = history.slice(-1000);
-            }
-            
-            localStorage.setItem('studyHistory', JSON.stringify(history));
-        }
-        
-        // 連続学習日数更新
-        function updateDailyStreak() {
-            const today = new Date().toDateString();
-            const lastStudyDate = localStorage.getItem('lastStudyDate');
-            let streakDays = parseInt(localStorage.getItem('streakDays') || '0');
-            
-            if (lastStudyDate !== today) {
-                const yesterday = new Date();
-                yesterday.setDate(yesterday.getDate() - 1);
-                
-                if (lastStudyDate === yesterday.toDateString()) {
-                    streakDays++;
-                } else if (lastStudyDate !== today) {
-                    streakDays = 1;
-                }
-                
-                localStorage.setItem('lastStudyDate', today);
-                localStorage.setItem('streakDays', streakDays.toString());
-            }
-        }
-        
-        // アコーディオン
-        function toggleAccordion(header) {
-            header.classList.toggle('active');
-            const content = header.nextElementSibling;
-            content.classList.toggle('active');
-        }
-        
-        // 全体進捗計算
-        function calculateOverallProgress() {
-            let totalQuestions = 0;
-            let uniqueAnswered = new Set();
-            let totalAnswered = 0;
-            let totalCorrect = 0;
-            
-            // 全問題数をカウント
-            Object.values(books).forEach(book => {
-                totalQuestions += countQuestionsInBook(book);
-            });
-            
-            // 解答済み問題を集計
-            allRecords.forEach(record => {
-                totalAnswered += record.stats.total || 0;
-                totalCorrect += record.stats.correct || 0;
-                
-                // ユニークな解答済み問題を記録
-                Object.entries(record.questions).forEach(([num, state]) => {
-                    if (state.state !== null) {
-                        const key = `${record.bookId}_${record.path.join('/')}_${num}`;
-                        uniqueAnswered.add(key);
-                    }
-                });
-            });
-            
-            const uniqueAnsweredCount = uniqueAnswered.size;
-            const overallRate = totalAnswered > 0 ? Math.round((totalCorrect / totalAnswered) * 100) : 0;
-            const progressPercentage = totalQuestions > 0 ? Math.min(100, Math.round((uniqueAnsweredCount / totalQuestions) * 100)) : 0;
-            
-            return {
-                totalQuestions,
-                totalAnswered,
-                totalCorrect,
-                uniqueAnsweredCount,
-                overallRate,
-                progressPercentage
-            };
-        }
-        
-        // 科目別統計計算
-        function calculateSubjectStats() {
-            const subjectStats = {};
-            
-            allRecords.forEach(record => {
-                const subject = record.path[0];
-                if (!subject) return;
-                
-                if (!subjectStats[subject]) {
-                    subjectStats[subject] = {
-                        total: 0,
-                        correct: 0,
-                        wrong: 0
-                    };
-                }
-                
-                subjectStats[subject].total += record.stats.total || 0;
-                subjectStats[subject].correct += record.stats.correct || 0;
-                subjectStats[subject].wrong += record.stats.wrong || 0;
-            });
-            
-            return subjectStats;
-        }
-        
-        // 問題数カウント
-        function countQuestionsInBook(book) {
-            let count = 0;
-            
-            function traverse(structure) {
-                Object.values(structure).forEach(item => {
-                    if (item.questions) {
-                        count += item.questions.length;
-                    }
-                    if (item.children) {
-                        traverse(item.children);
-                    }
-                });
-            }
-            
-            traverse(book.structure);
-            return count;
-        }
-        
-        // タイプラベル取得
-        function getTypeLabel(type) {
-            const labels = {
-                'subject': '科目',
-                'chapter': '章',
-                'section': '節',
-                'subsection': '項'
-            };
-            return labels[type] || type;
-        }
-        
-        // データクリア
-        function clearAllData() {
-            if (confirm('すべてのデータを削除しますか？この操作は取り消せません。')) {
-                localStorage.clear();
-                location.reload();
-            }
-        }
+
+        // 初期化実行
+        init();
     </script>
 </body>
 </html>
